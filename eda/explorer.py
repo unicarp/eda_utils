@@ -12,17 +12,24 @@ class Explorer:
         if self.df.empty:
             raise ValueError("DataFrame is empty.")
 
-    def first_summary(self, as_dict=False, print_all=False):
+    def first_summary(self, as_dict: bool =False, print_all: bool =False):
         """ Returns a summary of the DataFrame including shape, columns, dtypes and describe,
             all of them in a dictionary format. These are typically used as the first steps in EDA.
             Use `as_dict=False` to return pandas objects.
             If you want to return the summary as a dictionary —easy-to-use for JSONs or APIs—,
-            set `as_dict=True`."""
+            set `as_dict=True`.
+            `print_all=True` will print the summary to the console, if you want to keep it clean while
+            printing -specially when using jupyter- try saving it to a variable 
+            `summary = explorer.first_summary(print_all=True)`."""
+            
+        null_percent = (self.df.isnull().mean() * 100).round(2)
+
         if as_dict:
             summary = {
                 "shape": self.df.shape,
                 "columns": self.df.columns.tolist(),
                 "dtypes": self.df.dtypes.astype(str).to_dict(),
+                "null_percent": null_percent.to_dict(),
                 "describe": self.df.describe(include="all").to_dict()
             }
         else:
@@ -30,6 +37,7 @@ class Explorer:
                 "shape": self.df.shape,
                 "columns": self.df.columns,
                 "dtypes": self.df.dtypes,
+                "null_percent": null_percent,
                 "describe": self.df.describe(include="all")
             }
 
@@ -40,3 +48,4 @@ class Explorer:
                 print(summary[key], "\n")
 
         return summary
+    
